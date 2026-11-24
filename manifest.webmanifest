@@ -1,0 +1,26 @@
+{
+  "id": "/guia-bpf-mobile-lab/",
+  "name": "Guia BPF/APPCC — Laboratório Mobile (experimental)",
+  "short_name": "BPF Lab",
+  "lang": "pt-BR",
+  "start_url": "/guia-bpf-mobile-lab/",
+  "scope": "/guia-bpf-mobile-lab/",
+  "display": "standalone",
+  "background_color": "#edf4f8",
+  "theme_color": "#0b6174",
+  "icons": [
+    {
+      "src": "./icon-lab-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-lab-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "description": "Guia de Avaliação de Risco de Envasadoras de Água Mineral do Estado do Rio de Janeiro — SUVISA."
+}

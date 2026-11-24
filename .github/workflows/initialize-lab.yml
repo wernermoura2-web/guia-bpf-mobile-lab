@@ -1,0 +1,34 @@
+name: Inicializar cópia experimental v42
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/initialize-lab.yml']
+permissions:
+  contents: write
+jobs:
+  copy:
+    if: github.repository == 'wernermoura2-web/guia-bpf-mobile-lab'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copiar somente a versão pública de referência
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f equipe.html ] && [ -f individual.html ]; then
+            echo 'Cópia já inicializada; nada foi alterado.'
+            exit 0
+          fi
+          git clone --no-checkout --filter=blob:none https://github.com/wernermoura2-web/guias_18_paginas.git "$RUNNER_TEMP/guia-v42"
+          mkdir -p "$RUNNER_TEMP/guia-v42-files"
+          git -C "$RUNNER_TEMP/guia-v42" archive f9ee9c6c6019852a76d42162419fac8aaae875f8 | tar -x --exclude='./.github' --exclude='.github' -C "$RUNNER_TEMP/guia-v42-files"
+          cp -an "$RUNNER_TEMP/guia-v42-files/." "$GITHUB_WORKSPACE/"
+          # Os nomes dos bancos e das preferências não coincidem com os do site oficial.
+          perl -pi -e 's/guia-bpf-revisao-inspetores-v1/bpf-lab-revisao-inspetores-v1/g; s/guias_18_paginas-(individual|equipe)-recuperacao/bpf-lab-$1-recuperacao/g; s/bpf-equipe-backup-minutes/bpf-lab-equipe-backup-minutes/g' equipe.html individual.html
+          touch .nojekyll
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m 'Copiar v42 para o laboratório responsivo, sem alterar os modelos PDF'
+          git push origin main

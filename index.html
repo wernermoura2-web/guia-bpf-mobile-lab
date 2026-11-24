@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b5c91">
+  <meta name="description" content="Guia BPF/APPCC de avaliação de risco de envasadoras de água mineral do Estado do Rio de Janeiro — SUVISA.">
+  <title>Guia BPF/APPCC | Laboratório Mobile</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-lab-192.png">
+  <link rel="apple-touch-icon" href="./icon-lab-192.png">
+  <link rel="manifest" href="./manifest.webmanifest?v=lab1">
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color:#153c52;background:#eff6fa;font-synthesis:none}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100svh;background:#eff6fa}
+    .hero{background:linear-gradient(135deg,#075181 0%,#086899 58%,#1385ad 100%);color:#fff;padding:42px 22px 70px;position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;right:-75px;top:-95px;width:235px;height:235px;border:35px solid rgba(255,255,255,.06);border-radius:50%;pointer-events:none}
+    .hero-inner{max-width:570px;margin:auto;position:relative;z-index:1}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .brand img{width:64px;height:64px;border-radius:14px;background:transparent;object-fit:cover;box-shadow:0 3px 12px #073e6130}
+    .brand span{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.93}
+    h1{font-size:clamp(29px,7.7vw,42px);letter-spacing:-1.3px;line-height:1.12;margin:0 0 8px}
+    .subtitle{margin:0;font-size:17px;line-height:1.45;color:#e8f6ff}
+    .method{display:flex;align-items:center;gap:9px 12px;flex-wrap:wrap;margin:15px 0 0;font-size:13px;line-height:1.4;color:#e8f6ff}
+    .method strong{padding:4px 9px;border:1px solid #a8deee80;border-radius:6px;background:#052f4f55;color:white;letter-spacing:.06em;font-size:12px}
+    .method span{flex:1 1 200px}
+    .institution{margin:14px 0 0;padding-top:12px;border-top:1px solid #b5e7f155;font-size:14px;line-height:1.4;color:white;font-weight:700}
+    .test-notice{margin:16px 0 0;padding:12px 15px;border:1px solid #b5e7f1;border-radius:10px;background:#f0f9ff;color:#153c52;font-size:14px;line-height:1.45}
+    .test-notice strong{display:block;margin-bottom:3px}
+    main{max-width:614px;margin:-35px auto 0;padding:0 18px 38px;position:relative;z-index:2}
+    .panel{border-radius:23px;background:white;padding:17px;box-shadow:0 12px 36px rgba(8,64,96,.10);display:grid;gap:12px}
+    .action{appearance:none;width:100%;border:1px solid #dce9f0;border-radius:15px;min-height:82px;padding:14px 16px;background:#fff;color:#16435a;display:flex;align-items:center;gap:15px;text-align:left;text-decoration:none;font-family:inherit;font-size:18px;font-weight:700;line-height:1.25;cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+    .action:hover{background:#f0f8fd;border-color:#a9d8ed;transform:translateY(-1px)}
+    .action:focus-visible{outline:3px solid #68b8e0;outline-offset:3px}
+    .action.primary{background:#087aaa;color:#fff;border-color:#087aaa}
+    .action.primary:hover{background:#06688f}
+    .action .iconwrap{width:46px;height:46px;flex:none;border-radius:13px;background:#e4f3fb;color:#0879a9;display:grid;place-items:center}
+    .action.primary .iconwrap{background:#ffffff29;color:#fff}
+    .action svg{width:25px;height:25px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+    .action-label{flex:1}
+    .action .arrow{width:21px;height:21px;opacity:.7}
+    #install-status{display:none;margin:5px 6px 1px;padding:12px 14px;background:#eaf5fb;border-radius:12px;font-size:14px;line-height:1.45;color:#15445d}
+    #install-status.show{display:block}
+    @media(min-width:640px){.hero{padding:58px 28px 82px}main{margin-top:-43px}.panel{padding:22px;gap:14px}.action{min-height:88px}}
+    @media(prefers-reduced-motion:reduce){.action{transition:none}}
+  </style>
+<meta name="bpf-modelo-revisao" content="20261107-identidade-f21">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand"><img src="./icon-lab-192.png" width="64" height="64" alt=""><span>COOVFA • LABORATÓRIO</span></div>
+      <h1>Guia de Avaliação de Risco — Mobile Lab</h1>
+      <p class="subtitle">Envasadoras de água mineral</p>
+      <p class="method"><strong>BPF/APPCC</strong><span>Boas Práticas de Fabricação e Análise de Perigos e Pontos Críticos de Controle</span></p>
+      <p class="institution">Superintendência de Vigilância Sanitária do Estado do Rio de Janeiro (SUVISA)</p>
+      <aside class="test-notice" aria-label="Situação do aplicativo">
+        <strong>Versão experimental independente — LAB 1</strong>
+        Cópia da v42 para testar a interface móvel. Seus preenchimentos locais são separados do guia original. A impressão mantém os modelos padronizados da v42.
+      </aside>
+    </div>
+  </header>
+  <main>
+    <nav class="panel" aria-label="Acessos do guia">
+      <button id="install-guia18" class="action primary" type="button">
+        <span class="iconwrap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v3h16v-3"/></svg></span>
+        <span class="action-label">Instalar BPF Lab</span>
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+      <a class="action" href="./abrir-guia-corrigido.html?modo=equipe&amp;v=20261123-f-padrao-v31">
+        <span class="iconwrap" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5"/></svg></span>
+        <span class="action-label">Abrir BPF Lab</span>
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="action" href="./manual.html">
+        <span class="iconwrap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM9 12h6M9 16h6"/></svg></span>
+        <span class="action-label">Manual de Preenchimento</span>
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="action" hidden style="display:none" href="./revisao-frases.html?v=20261108-abertura-direta-v63">
+        <span class="iconwrap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h12M8 10h12M8 16h5M3 4h1M3 10h1M3 16h1"/><path d="m15 19 2 2 4-4"/></svg></span>
+        <span class="action-label">Revisão das frases</span>
+        <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <a class="action" href="./creditos-institucionais.html">
+          <span class="iconwrap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M4 20h16M6 10v7m6-7v7m6-7v7"/></svg></span>
+          <span class="action-label">Créditos Institucionais</span>
+          <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <p id="install-status" role="status" aria-live="polite"></p>
+    </nav>
+  </main>
+  <script>
+    (()=>{
+      let promptEvent=null;
+      const button=document.getElementById('install-guia18'),status=document.getElementById('install-status');
+      const standalone=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+      const message=t=>{status.textContent=t;status.classList.add('show');};
+      window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();promptEvent=event;});
+      window.addEventListener('appinstalled',()=>{promptEvent=null;message('Guia BPF/APPCC instalado.');});
+      button.addEventListener('click',async()=>{
+        if(standalone()){message('O Guia BPF/APPCC já está aberto como aplicativo.');return;}
+        if(!promptEvent){message('No Chrome, abra o menu ⋮ e escolha “Adicionar à tela inicial” ou “Instalar aplicativo”.');return;}
+        const event=promptEvent;promptEvent=null;button.disabled=true;
+        try{await event.prompt();const result=await event.userChoice;message(result.outcome==='accepted'?'Instalação solicitada.':'Instalação cancelada.');}
+        catch(e){message('No Chrome, abra o menu ⋮ e escolha “Adicionar à tela inicial”.');}
+        finally{button.disabled=false;}
+      });
+      if('serviceWorker' in navigator&&location.protocol==='https:'){
+        navigator.serviceWorker.register('./sw-guia18.js',{scope:'./',updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+      }
+    })();
+  </script>
+</body>
+</html>
