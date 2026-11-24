@@ -1,0 +1,3 @@
+BPF Lab — versão experimental 1
+Base: guia oficial v42 (f9ee9c6c6019852a76d42162419fac8aaae875f8).
+PDFs originais preservados. Modo adaptado para tela; guia original acessível no aplicativo.
