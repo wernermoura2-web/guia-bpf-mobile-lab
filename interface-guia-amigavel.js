@@ -1,0 +1,607 @@
+/* Interface simplificada do Guia BPF. Não altera dados, cálculos ou PDF. */
+(()=>{'use strict';
+ if(window.__BPF_UI_FRIENDLY_20261106)return;
+ window.__BPF_UI_FRIENDLY_20261106=true;
+ const inTeam=/(?:^|\/)equipe(?:_atualizado)?\.html$/i.test(location.pathname);
+ const CSS=`
+ @media screen{
+  .bpf-ui-guide-header{background:linear-gradient(110deg,#123e57,#126a91)!important;color:#fff!important;padding:18px 19px!important}
+  .bpf-ui-guide-header h1{font-size:clamp(22px,5vw,29px)!important;line-height:1.2!important;margin:0 0 5px!important;letter-spacing:-.4px!important}
+  .bpf-ui-guide-header p{font-size:14px!important;line-height:1.35!important;margin:0!important;color:#e3f3fb!important}
+  .bpf-ui-hub{box-sizing:border-box;margin:14px auto 20px;max-width:1040px;padding:18px;color:#183f52;background:linear-gradient(180deg,#fff,#f9fcfe);border:1px solid #cddfea;border-radius:18px;box-shadow:0 8px 24px #173e5512;font:inherit}
+  .bpf-ui-hub *{box-sizing:border-box}
+  .bpf-ui-hub h2{font-size:clamp(20px,4.6vw,24px);line-height:1.25;margin:0 0 15px;font-weight:750;letter-spacing:-.4px;color:#153b50}
+  .bpf-ui-label{font-size:13px;font-weight:750;letter-spacing:.02em;color:#466474;margin-bottom:9px}
+  .bpf-ui-process{background:#f1f7fb;border:1px solid #d9e9f1;border-radius:12px;padding:12px;margin-bottom:15px}
+  .bpf-ui-processrow{display:flex;align-items:stretch;gap:8px}
+  .bpf-ui-processrow select{flex:1;min-width:0;width:100%;max-width:100%;height:46px;min-height:46px;padding:0 10px;border:1px solid #afc8d8;border-radius:9px;background:#fff;color:#163c50;font:600 15px Arial,sans-serif}
+  .bpf-ui-hub button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+  .bpf-ui-arrow{width:45px;min-width:45px;border:1px solid #bacfda;border-radius:9px;background:#fff;color:#145d83;font-size:25px;font-weight:650}
+  .bpf-ui-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:15px}
+  .bpf-ui-action{min-height:63px;border:1px solid #bdd4e1;border-radius:11px;padding:10px 9px;background:#fff;color:#19445c;font-size:14px;font-weight:700;text-align:center;line-height:1.25}
+  .bpf-ui-action.primary{background:#087aaa;border-color:#087aaa;color:#fff}
+  .bpf-ui-action:focus-visible,.bpf-ui-arrow:focus-visible,.bpf-ui-hub summary:focus-visible{outline:3px solid #f2ad35;outline-offset:2px}
+  .bpf-ui-hub details{border:1px solid #d6e5ec;border-radius:12px;background:#fff;margin:9px 0 0;overflow:hidden}
+  .bpf-ui-hub details[open]{background:#f9fcff}
+  .bpf-ui-hub summary{cursor:pointer;padding:15px 15px;font-size:16px;font-weight:750;line-height:1.2;color:#15435c;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}
+  .bpf-ui-hub summary::-webkit-details-marker{display:none}
+  .bpf-ui-hub summary:after{content:'⌄';font-size:24px;line-height:.7;transform-origin:center;transition:transform .15s;color:#247da4}
+  .bpf-ui-hub details[open]>summary:after{transform:rotate(180deg)}
+  .bpf-ui-detail{padding:3px 13px 14px;border-top:1px solid #e2edf3;display:grid;gap:9px}
+  .bpf-ui-print-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .bpf-ui-detail .bpf-ui-action.bpf-ui-editable-guide{grid-column:1/-1;display:grid;place-items:center;text-align:center;text-decoration:none;box-sizing:border-box}
+  .bpf-ui-detail .bpf-ui-action{width:100%;min-height:49px;font-size:15px;text-align:left;padding:12px 15px}
+  .bpf-ui-hint{margin:0;font-size:13px;line-height:1.4;color:#537084}
+  .bpf-ui-hub .bpf-ui-mini{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0;color:#365768;font-size:14px}
+  .bpf-ui-mini input[type=range]{flex:1;max-width:260px;accent-color:#087aaa}
+  .bpf-ui-mini input[type=checkbox]{width:19px;height:19px;accent-color:#087aaa}
+  .bpf-ui-original{display:none!important}
+  .bpf-ui-backup{border:1px solid #cddfe8;border-radius:13px;padding:0;margin:14px 0;background:#f6fafd;overflow:hidden}
+  .bpf-ui-backup>summary{padding:14px 17px;cursor:pointer;font-size:16px;font-weight:700;color:#184c66}
+  .bpf-ui-backup>div{padding:12px 14px}
+  .bpf-item-code{display:grid!important;grid-template-columns:minmax(0,1fr);grid-template-rows:42% 58%;justify-content:stretch!important;align-items:stretch!important;gap:0!important;padding:0!important;z-index:20!important;isolation:isolate;visibility:visible!important;opacity:1!important}
+  .bpf-item-code>span{display:flex;align-items:center;justify-content:center;min-height:0;line-height:1;white-space:nowrap}
+  .bpf-item-code>.bpf-f{position:relative;z-index:21!important;display:flex!important;align-items:center;justify-content:center;visibility:visible!important;opacity:1!important;box-sizing:border-box;width:100%!important;height:100%!important;min-height:0!important;min-width:0!important;padding:0!important;line-height:1!important;align-self:stretch}
+  .bpf-f-destaque,.bpf-regra-pcc-botao{font-weight:800!important;color:#fff!important;background:#087aaa!important;border:1px solid #07577b!important;border-radius:3px!important;text-decoration:none!important;opacity:1!important}
+  .bpf-regra-pcc-botao{position:absolute;left:7.9%;transform:translateY(-50%);z-index:40;display:grid;place-items:center;width:2.8%;aspect-ratio:1;padding:0;font-size:1.75cqw;line-height:1}
+  .page[data-page="17"] .bpf-regra-pcc-botao{left:7.45%;width:2.1%;font-size:1.4cqw}
+  /* bpf-f-dimensoes-20261106-v3: o tamanho da letra segue a altura real do item. */
+  @media(max-width:520px){
+    .bpf-ui-hub{padding:13px 12px;margin:12px 9px 16px;border-radius:15px}
+    .bpf-ui-actions{gap:7px}
+    .bpf-ui-print-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .bpf-ui-print-actions>:last-child{grid-column:1/-1}
+    .bpf-ui-action{font-size:12.5px;padding:9px 6px;min-height:58px}
+    .bpf-ui-detail .bpf-ui-action{font-size:15px}
+  }
+ }
+ @media print{.bpf-ui-hub,.bpf-regra-pcc-botao{display:none!important}}
+ `;
+ const style=document.createElement('style');style.textContent=CSS;document.head.appendChild(style);
+ const norm=s=>String(s||'').replace(/\s+/g,' ').trim();
+ const label=el=>norm(el?.tagName==='INPUT'?el.value:(el?.textContent||el?.getAttribute?.('aria-label')||''));
+ const actionSelector='button,a,[role="button"],input[type="button"],input[type="submit"]';
+ function sourceControls(){return Array.from(document.querySelectorAll(actionSelector)).filter(el=>!el.closest('#bpf-ui-hub'))}
+ function lookup(pattern,preferVisible=false){
+   const matches=sourceControls().filter(el=>pattern.test(label(el))&&!el.closest('dialog,[role="dialog"],[aria-modal="true"]'));
+   return (preferVisible?matches.find(el=>el.getClientRects().length>0&&!el.hidden):null)||matches[0]||null;
+ }
+ function mark(el){if(!el)return;el.classList.add('bpf-ui-original');el.setAttribute('data-bpf-source-control','1')}
+ function makeButton(text,original,primary=false){
+   if(!original)return null;
+   const b=document.createElement('button');b.type='button';
+   b.className='bpf-ui-action'+(primary?' primary':'');
+   b.textContent=text;
+   b.addEventListener('click',()=>{original.click()});
+   mark(original);return b;
+ }
+ function hideIntro(){
+  const starts=['Guia BPF para preenchimento no navegador.','Preencha os campos sobre o guia.','Guia em branco. Salve em arquivo antes de fechar.'];
+  const candidates=Array.from(document.querySelectorAll('p,aside,small,div'));
+  for(const start of starts){
+   const el=candidates.filter(x=>{const t=norm(x.textContent);return t.startsWith(start)&&t.length<1150&&!x.querySelector('button,a,select,input,textarea,canvas,img')})
+     .sort((a,b)=>a.textContent.length-b.textContent.length)[0];
+   if(el)el.style.display='none';
+  }
+  const header=Array.from(document.querySelectorAll('header h1,h1,header h2'))
+   .find(el=>norm(el.textContent)==='Guia Estadual de Avaliação do Risco Sanitário');
+  if(header){header.textContent='Guia de Avaliação de Risco';header.closest('header')?.classList.add('bpf-ui-guide-header')}
+  const subs=Array.from(document.querySelectorAll('header p,header small')).filter(el=>norm(el.textContent).includes('Formulário local para Chrome'));
+  for(const p of subs)p.textContent='Envasadoras de água mineral';
+ }
+ function makeAccordion(title){
+  const d=document.createElement('details');const s=document.createElement('summary');s.textContent=title;
+  const content=document.createElement('div');content.className='bpf-ui-detail';d.append(s,content);
+  return {details:d,content};
+ }
+ function makeNav(host,save){
+  const options=Array.from(document.querySelectorAll('select')).filter(s=>s.options?.length>2&&!s.closest('#bpf-ui-hub'));
+  const src=options.find(s=>Array.from(s.options).some(o=>/4\.[1-9]/.test(o.textContent)))||options[0];
+  if(!src)return;
+  const box=document.createElement('section');box.className='bpf-ui-process';
+  const lbl=document.createElement('div');lbl.className='bpf-ui-label';lbl.textContent='PROCESSO';
+  const row=document.createElement('div');row.className='bpf-ui-processrow';
+  const mirror=document.createElement('select');mirror.setAttribute('aria-label','Selecionar processo');
+  function sync(){mirror.innerHTML=src.innerHTML;mirror.value=src.value;if(mirror.selectedIndex<0)mirror.selectedIndex=src.selectedIndex}
+  sync();
+  mirror.addEventListener('change',()=>{
+    src.value=mirror.value;src.dispatchEvent(new Event('input',{bubbles:true}));src.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  const srcbuttons=sourceControls().filter(el=>el!==save);
+  const prev=srcbuttons.find(el=>/^(?:‹|❮|«|←|<|Anterior)$/i.test(label(el)));
+  const next=srcbuttons.find(el=>/^(?:›|❯|»|→|>|Próximo)$/i.test(label(el)));
+  const prevBtn=document.createElement('button');prevBtn.className='bpf-ui-arrow';prevBtn.type='button';prevBtn.textContent='‹';prevBtn.setAttribute('aria-label','Processo anterior');
+  const nextBtn=prevBtn.cloneNode();nextBtn.textContent='›';nextBtn.setAttribute('aria-label','Próximo processo');
+  prevBtn.addEventListener('click',()=>{if(prev)prev.click();else{src.selectedIndex=Math.max(0,src.selectedIndex-1);src.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(sync,80)});
+  nextBtn.addEventListener('click',()=>{if(next)next.click();else{src.selectedIndex=Math.min(src.options.length-1,src.selectedIndex+1);src.dispatchEvent(new Event('change',{bubbles:true}))}setTimeout(sync,80)});
+  row.append(prevBtn,mirror,nextBtn);box.append(lbl,row);
+  const addPhotos=document.querySelector('.bpf-gallery-page-actions');if(addPhotos)box.appendChild(addPhotos);
+  host.appendChild(box);
+  mark(src);if(prev)mark(prev);if(next)mark(next);
+  src.addEventListener('change',()=>{setTimeout(sync,0)});
+ }
+ function wrapBackups(){
+  if(document.querySelector('.bpf-ui-backup'))return;
+  const headings=Array.from(document.querySelectorAll('h2,h3,h4,strong,b,div,span'))
+   .filter(el=>norm(el.textContent).startsWith('Cópia de segurança')&&norm(el.textContent).length<110&&!el.closest('#bpf-ui-hub'));
+  for(const h of headings){
+   if(h.closest('details'))continue;
+   let parent=h.parentElement;
+   while(parent&&parent!==document.body){
+     const t=norm(parent.textContent);
+     if(t.includes('Salvar cópia agora')&&t.includes('Recuperar preenchimento')&&t.length<5500)break;
+     parent=parent.parentElement;
+   }
+   if(!parent||parent===document.body||parent.closest('.bpf-ui-backup'))continue;
+   const d=document.createElement('details');d.className='bpf-ui-backup';
+   const summary=document.createElement('summary');summary.textContent='Cópias de segurança';
+   const inner=document.createElement('div');parent.parentNode.insertBefore(d,parent);
+   inner.appendChild(parent);d.append(summary,inner);break;
+  }
+ }
+ function makePrintDownload(label,fileName){
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='bpf-ui-action';
+  button.textContent=label;
+  button.addEventListener('click',async()=>{
+    const status=document.querySelector('#status');
+    button.disabled=true;
+    try{
+      // O Guia em Branco já está sincronizado com as páginas do HTML.
+      // Não usar o antigo .pdf.b64, nem repintar parcialmente as células F.
+      const isBlankGuide=fileName==='Guia_BPF_APPCC_Em_Branco_18_Paginas.pdf';
+      const source='./impressao/'+fileName+(isBlankGuide?'':'.b64')+'?v=20261123-f-padrao-v31-pdf';
+      const response=await fetch(source,{cache:'reload'});
+      if(!response.ok)throw new Error('PDF indisponível');
+      const bytes=isBlankGuide
+        ?new Uint8Array(await response.arrayBuffer())
+        :Uint8Array.from(atob((await response.text()).trim()),char=>char.charCodeAt(0));
+      if(String.fromCharCode(...bytes.subarray(0,5))!=='%PDF-')throw new Error('PDF inválido');
+      const pdfBytes=bytes;
+      const url=URL.createObjectURL(new Blob([pdfBytes],{type:'application/pdf'}));
+      const link=document.createElement('a');
+      link.href=url;
+      link.download=fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      if(status)status.textContent='PDF pronto para abrir e imprimir.';
+    }catch(error){
+      if(status)status.textContent='Não foi possível baixar o PDF. Tente novamente com conexão à internet.';
+      else alert('Não foi possível baixar o PDF. Tente novamente com conexão à internet.');
+    }finally{
+      button.disabled=false;
+    }
+  });
+  return button;
+ }
+ function makeHub(){
+  if(document.getElementById('bpf-ui-hub'))return true;
+  const save=lookup(/^Salvar arquivo$/i),open=lookup(/^Abrir preenchimento$/i),pdf=lookup(/^Imprimir\s*\/\s*PDF$/i);
+  if(!save||!open||!pdf)return false;
+  const importBtn=lookup(/^Importar processos$/i);
+  const teamBtn=lookup(/^(?:Trabalho em equipe|Configurar equipe)$/i);
+  const revise=lookup(/^Revisar frases dos inspetores$/i);
+  const reset=document.querySelector('#new')||lookup(/^(?:Limpar todo o guia|Novo\s*\/\s*(?:limpar tudo|importar tudo))$/i);
+  const remove=lookup(/^Remover imagem$/i);
+  const root=document.createElement('section');root.id='bpf-ui-hub';root.className='bpf-ui-hub';root.setAttribute('aria-label','Menu do Guia de Avaliação de Risco');
+  const heading=document.createElement('h2');heading.textContent='Menu do guia';root.appendChild(heading);
+  makeNav(root,save);
+  const lbl=document.createElement('div');lbl.className='bpf-ui-label';lbl.textContent='ARQUIVOS E RELATÓRIOS';root.appendChild(lbl);
+  const actions=document.createElement('div');actions.className='bpf-ui-actions';
+  actions.append(makeButton('Salvar arquivo',save,true),makeButton('Abrir preenchimento',open),makeButton('Imprimir PDF',pdf));
+  root.appendChild(actions);
+  if(inTeam&&(teamBtn||importBtn)){
+    const t=makeAccordion('Configurar equipe');
+    if(teamBtn)t.content.appendChild(makeButton('Dados da equipe',teamBtn));
+    if(importBtn){
+      const b=makeButton('Importar processos',importBtn);
+      t.content.appendChild(b);
+    }
+    root.appendChild(t.details);
+  }
+  const extra=makeAccordion('Mais opções');
+  const printActions=document.createElement('div');
+  printActions.className='bpf-ui-print-actions';
+  printActions.append(
+    makePrintDownload('Imprimir Guia em Branco','Guia_BPF_APPCC_Em_Branco_18_Paginas.pdf'),
+    makePrintDownload('Imprimir Anexo em Branco','Anexo_F_20_Paginas_Retrato.pdf'),
+    makePrintDownload('Imprimir Check-List de Documentos','Checklist_de_Documentos_Envasadora.pdf')
+  );
+  const editableGuide=document.createElement('a');
+  editableGuide.className='bpf-ui-action bpf-ui-editable-guide';
+  editableGuide.href='./impressao/Guia_Editavel_em_Branco.pdf?v=20261123-f-padrao-v31-pdf';
+  editableGuide.download='Guia_Editavel_em_Branco.pdf';
+  editableGuide.textContent='Guia Editável em Branco (sem as frases)';
+  editableGuide.addEventListener('click',async event=>{
+    event.preventDefault();
+    if(editableGuide.getAttribute('aria-busy')==='true')return;
+    editableGuide.setAttribute('aria-busy','true');
+    const status=document.querySelector('#status');
+    try{
+      const response=await fetch(editableGuide.href,{cache:'reload'});
+      if(!response.ok)throw new Error('Arquivo indisponível');
+      const base=await response.arrayBuffer();
+      if(String.fromCharCode(...new Uint8Array(base,0,5))!=='%PDF-'||
+         !new TextDecoder().decode(base.slice(-128)).includes('%%EOF'))throw new Error('PDF incompatível');
+      const url=URL.createObjectURL(new Blob([base],{type:'application/pdf'}));
+      const download=document.createElement('a');
+      download.href=url;
+      download.download=editableGuide.download;
+      document.body.append(download);
+      download.click();
+      download.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      if(status)status.textContent='Guia Editável em Branco baixado.';
+    }catch(error){
+      const message='Não foi possível baixar o Guia Editável em Branco. Atualize a página e tente novamente.';
+      if(status)status.textContent=message; else alert(message);
+    }finally{
+      editableGuide.removeAttribute('aria-busy');
+    }
+  });
+  printActions.appendChild(editableGuide);
+  extra.content.appendChild(printActions);
+  if(revise)mark(revise);
+  const annex=Array.from(document.querySelectorAll('input[type=checkbox]'))
+    .find(el=>!el.closest('#bpf-ui-hub')&&/Anexar F ao PDF/i.test(norm(el.parentElement?.textContent)));
+  if(annex){
+    const row=document.createElement('label');row.className='bpf-ui-mini';
+    const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=annex.checked;
+    checkbox.addEventListener('change',()=>{if(annex.checked!==checkbox.checked)annex.click()});
+    row.append(checkbox,document.createTextNode('Anexar Frases ao Guia Impresso'));extra.content.appendChild(row);
+    if(annex.parentElement?.tagName==='LABEL')annex.parentElement.classList.add('bpf-ui-original');
+  }
+  const ranges=Array.from(document.querySelectorAll('input[type=range]')).filter(el=>!el.closest('#bpf-ui-hub'));
+  const zoom=ranges.find(el=>/zoom/i.test(norm(el.parentElement?.textContent)))||ranges[0];
+  if(zoom){
+    const row=document.createElement('label');row.className='bpf-ui-mini';row.appendChild(document.createTextNode('Zoom'));
+    const mirror=zoom.cloneNode();mirror.removeAttribute('id');mirror.value=zoom.value;
+    mirror.addEventListener('input',()=>{zoom.value=mirror.value;zoom.dispatchEvent(new Event('input',{bubbles:true}));zoom.dispatchEvent(new Event('change',{bubbles:true}))});
+    row.appendChild(mirror);extra.content.appendChild(row);
+    if(zoom.parentElement?.tagName==='LABEL')zoom.parentElement.classList.add('bpf-ui-original');
+    else mark(zoom);
+  }
+  if(reset)extra.content.appendChild(makeButton('Limpar todo o guia',reset));
+  if(extra.content.children.length)root.appendChild(extra.details);
+  if(remove)mark(remove);
+  // Esconder repetições de Importar processos sem esconder confirmação em diálogos.
+  if(inTeam)sourceControls().filter(el=>/^Importar processos$/i.test(label(el))&&!el.closest('dialog,[role="dialog"],[aria-modal="true"]')).forEach(mark);
+  const anchor=save.closest('nav,.toolbar,.controls,.actions')||save.parentElement;
+  anchor.parentNode.insertBefore(root,anchor);
+  // Recolher a barra antiga apenas quando ela contiver exclusivamente os controles duplicados.
+  // Não esconder formulários, caixas de diálogo, tabelas ou campos da inspeção.
+  let oldBar=save.parentElement;
+  while(oldBar&&oldBar!==document.body&&(!oldBar.contains(open)||!oldBar.contains(pdf)))oldBar=oldBar.parentElement;
+  if(oldBar&&oldBar!==document.body&&!oldBar.contains(root)&&norm(oldBar.textContent).length<2500&&
+     !oldBar.querySelector('dialog,table,canvas,textarea,[role="dialog"]')&&
+     oldBar.querySelectorAll('input:not([type="button"]):not([type="checkbox"]):not([type="range"]),select').length<=2){
+    oldBar.classList.add('bpf-ui-original');
+  }
+  return true;
+ }
+ function emphasizeF(){
+  for(const el of sourceControls()){
+   if(label(el)!=='F')continue;
+   el.classList.add('bpf-f-destaque');
+   if(!el.hasAttribute('aria-label'))el.setAttribute('aria-label','Abrir frases do item');
+  }
+ }
+ let completed=false,queued=false,frasesOpened=false;
+ function openRequestedPhraseReview(){
+  if(frasesOpened||new URLSearchParams(location.search).get('revisar-frases')!=='1')return;
+  const target=lookup(/^Revisar frases dos inspetores$/i);
+  if(!target)return;
+  frasesOpened=true;
+  target.click();
+  const params=new URLSearchParams(location.search);params.delete('revisar-frases');
+  history.replaceState(history.state,'',location.pathname+(params.size?'?'+params:'')+location.hash);
+ }
+ function apply(){hideIntro();if(!completed)completed=makeHub();wrapBackups();emphasizeF();openRequestedPhraseReview()}
+ function schedule(){if(queued)return;queued=true;setTimeout(()=>{queued=false;apply()},220)}
+ function start(){apply();new MutationObserver(schedule).observe(document.body,{subtree:true,childList:true})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+
+
+/* BPF_PCC_DUAS_NATUREZAS_20261107_REV5: regra PCC e perigos microbiologicos/quimicos no HTML e PDF.
+   Mantem o calculo original, corrige o PCC de testes de residuos do item 4.6.6 e preserva a area editavel. */
+(()=>{'use strict';
+ if(window.__BPF_PCC_DUAS_NATUREZAS_20261107_REV5)return;
+ window.__BPF_PCC_DUAS_NATUREZAS_20261107_REV5=true;
+ const general=[
+  'REGRA PCC: O não atendimento de qualquer item classificado como PCC torna automaticamente o processo de ALTO RISCO, independentemente do percentual.',
+  'Justificativa: a falha pode permitir contaminação microbiológica ou química da água, inclusive por resíduos de saneantes e detergentes nas embalagens.'
+ ];
+ const embalagem=[
+  'REGRA PCC: O não atendimento de qualquer item classificado como PCC torna automaticamente o processo de ALTO RISCO, independentemente do percentual.',
+  'Justificativa: perigos microbiológicos e químicos. No item 4.6.6, a ausência de resíduos de saneantes e detergentes após a higienização das embalagens deve ser comprovada por testes indicadores.'
+ ];
+ const matriz=[...embalagem];
+ const curta=['REGRA PCC: PCC não atendido implica ALTO RISCO, inclusive por perigos microbiológicos ou resíduos químicos.'];
+ // Centros das células AVALIAÇÃO (páginas 0–10) e RISCO (17) nos fundos
+ // do formulário, em porcentagem da altura de cada página.
+ const ruleCellCenters={
+  0:53.52,1:31.12,2:35.15,3:35.15,4:35.15,5:35.15,6:33.33,
+  7:39.59,8:39.59,9:39.86,10:39.86,17:62.63
+ };
+ const areas=[];
+ function linesFor(page){return page>=11?curta:page===7||page===8?embalagem:general;}
+ function fixResiduePCC(){
+  if(typeof BPF_PHRASES==='undefined')return;
+  let modified=false;
+  for(const page of BPF_PHRASES)for(const row of page.rows){
+   if(row.code!=='4.6.6')continue;
+   for(const scope of row.scopes){
+    if(scope.phrases.length<2)continue;
+    if(scope.phrases[0].appcc!=='PPRO'||scope.phrases[1].appcc!=='PCC'){
+     scope.phrases[0].appcc='PPRO';
+     scope.phrases[1].appcc='PCC';
+     modified=true;
+    }
+   }
+  }
+  if(modified&&typeof window.Guia?.recalc==='function')window.Guia.recalc();
+ }
+
+ const PCC_DETAIL={
+ '4.2.7':'Higienização da canalização de condução da água, para prevenir a formação de biofilmes e a contaminação microbiológica e, quando empregados detergentes ou saneantes, evitar resíduos químicos.',
+ '4.1.3':'Higienização das instalações, canalizações e equipamentos de captação, para prevenir a introdução de contaminantes microbiológicos na água e, quando utilizados produtos químicos, impedir a permanência de seus resíduos.',
+ '4.3.5':'Higienização dos reservatórios de armazenamento, para prevenir biofilmes e a contaminação microbiológica da água e, quando utilizados detergentes ou saneantes, evitar resíduos químicos.',
+ '4.6.3':'Controle da eficácia da higienização das embalagens retornáveis, para prevenir a sobrevivência de microrganismos e a contaminação microbiológica da água.',
+ '4.6.5':'Controle das condições críticas de higienização, para evitar a permanência de contaminantes nas embalagens.',
+ '4.6.6':'Comprovação, por testes indicadores, da eliminação dos resíduos de detergentes e saneantes após a higienização, para prevenir a contaminação química da água.',
+ '4.6.8':'Controle da higienização das embalagens e dos componentes envolvidos, para impedir a contaminação microbiológica da água.',
+ '4.7.1':'Controle sanitário da operação de envase, para prevenir a contaminação microbiológica da água.',
+ '4.7.4':'Controle das condições sanitárias da sala de envase que representem perigo significativo de contaminação.',
+ '4.7.5':'Controle da higiene dos manipuladores na área de envase, visando evitar contaminação microbiológica.',
+ '4.7.8':'Higienização de reservatórios, conexões, tubulações, mangueiras e bicos de envase, para prevenir contaminação microbiológica e, quando aplicável, resíduos químicos.'
+ };
+ const PCC_RULE='O não atendimento de qualquer requisito classificado como PCC, quando caracterizar perda de controle de perigo significativo, determina automaticamente a classificação do respectivo processo como ALTO RISCO, independentemente da pontuação ou do percentual de atendimento.';
+ function relevantPccs(page){
+  const dataset=(typeof BPF_PHRASES!=='undefined'&&Array.isArray(BPF_PHRASES))?BPF_PHRASES:[];
+  let rows=dataset[page]?.rows||[];
+  // Se os índices do formulário e da lista de frases não coincidirem,
+  // identificar as linhas pelos códigos que efetivamente aparecem na página.
+  const pageEl=document.querySelector('#pages .page[data-page="'+Number(page)+'"]');
+  const shown=pageEl?.innerText||'';
+  const indexedCodes=rows.map(r=>r.code).filter(Boolean);
+  if(!indexedCodes.some(code=>shown.includes(code))){
+   rows=dataset.flatMap(p=>p.rows||[]).filter(r=>r.code&&shown.includes(r.code));
+  }
+  const found=[];
+  for(const row of rows)for(const scope of (row.scopes||[])){
+   const phrases=scope.phrases||[];
+   phrases.forEach((f,i)=>{
+    if(String(f.appcc||'').toUpperCase()!=='PCC')return;
+    const ident=String(f.id||f.numero||f.indice||('F'+(i+1)));
+    const code=String(row.code||'').trim();
+    const unique=code+':'+ident;
+    if(found.some(x=>x.unique===unique))return;
+    found.push({unique,code,ident,detail:PCC_DETAIL[code]||'Consultar a frase e a análise de perigos deste requisito para identificar o controle crítico específico.'});
+   });
+  }
+  return found;
+ }
+ function ruleFor(page){
+  const pccs=relevantPccs(page);
+  if(page===17){
+   return {
+    title:'Regra PCC — Matriz de Risco',
+    explanation:'Na matriz, qualquer processo com PCC não atendido e perda de controle de perigo significativo deve ser classificado como ALTO RISCO. A avaliação considera os perigos microbiológicos e químicos, inclusive resíduos de saneantes e detergentes usados nas embalagens.',
+    pccs:[]
+   };
+  }
+  if(!pccs.length){
+   return {title:'Regra PCC — Processo',explanation:'Não foi identificado PCC neste processo a partir das classificações APPCC disponíveis. A regra automática de ALTO RISCO aplica-se quando houver PCC classificado no processo e perda do seu controle.',pccs:[]};
+  }
+  return {
+   title:'Regra PCC — '+pccs.map(x=>x.code).filter((c,i,a)=>a.indexOf(c)===i).join(', '),
+   explanation:'Itens PCC deste processo e perigos associados:',
+   pccs
+  };
+ }
+ function showRule(page){
+  let dlg=document.getElementById('bpf-pcc-regra-dialog');
+  if(!dlg){
+   dlg=document.createElement('dialog');dlg.id='bpf-pcc-regra-dialog';
+   dlg.setAttribute('aria-labelledby','bpf-pcc-regra-titulo');
+   dlg.style.cssText='width:min(94vw,740px);max-height:85dvh;overflow:auto;border:1px solid #c6dce8;border-radius:14px;padding:24px;background:#f7fbfe;color:#193f55;box-shadow:0 16px 50px #0b294355;font:15px/1.52 Arial,Helvetica,sans-serif';
+   dlg.innerHTML='<h2 id="bpf-pcc-regra-titulo" style="font-size:21px;margin:0 0 13px"></h2><p id="bpf-pcc-regra-criterio" style="font-weight:600;margin:0 0 12px"></p><p id="bpf-pcc-regra-descricao" style="margin:0 0 12px"></p><div id="bpf-pcc-regra-itens" style="margin:0 0 16px"></div><button type="button" id="bpf-pcc-fechar" style="background:#12648b;color:white;border:0;border-radius:8px;padding:10px 22px;font-weight:bold;cursor:pointer">Fechar</button>';
+   document.body.appendChild(dlg);
+   dlg.querySelector('#bpf-pcc-fechar').addEventListener('click',()=>dlg.close());
+  }
+  const rule=ruleFor(page);
+  dlg.querySelector('#bpf-pcc-regra-titulo').textContent=rule.title;
+  dlg.querySelector('#bpf-pcc-regra-criterio').textContent=PCC_RULE;
+  dlg.querySelector('#bpf-pcc-regra-descricao').textContent=rule.explanation;
+  const list=dlg.querySelector('#bpf-pcc-regra-itens');list.replaceChildren();
+  for(const item of rule.pccs){
+   const p=document.createElement('p');p.style.margin='0 0 9px';
+   const b=document.createElement('strong');b.textContent=item.code+' ('+item.ident+') — ';
+   p.append(b,document.createTextNode(item.detail));list.append(p);
+  }
+  if(!dlg.open)dlg.showModal();
+ }
+ function addR(el,page,center){
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='bpf-regra-pcc-botao';
+  button.textContent='R';
+  button.title='Regra PCC — ver critérios de alto risco';
+  button.setAttribute('aria-label','Abrir Regra PCC');
+  button.style.top=center+'%';
+  button.addEventListener('click',()=>showRule(page));
+  el.appendChild(button);
+ }
+ function start(){
+  const host=document.getElementById('pages'),data=window.Guia?.data;
+  if(!host||!data?.widgets||host.children.length<18)return;
+  fixResiduePCC();
+  for(const el of host.children)el.querySelectorAll('.bpf-nota-pcc-2-perigos,#bpf-regra-pcc-matriz').forEach(n=>n.remove());
+  for(const [page,center] of Object.entries(ruleCellCenters)){
+   addR(host.querySelector('.page[data-page="'+Number(page)+'"]'),Number(page),center);
+  }
+ }
+ // Não acrescentar frases sobre o formulário nem alterar as dimensões do PDF editável.
+ // O aviso da Regra PCC é acessível pelo botão R na versão HTML.
+ function installGeneralRiskCount(){
+  const previous=window.recalc;
+  if(typeof previous!=='function'||previous.__bpfRiskPCCMatrixV97)return;
+  // Matriz: os 8 processos têm células de risco, de escore e de unidades próprias.
+  // O percentual permanece inalterado; PCC NÃO prevalece sobre a faixa percentual.
+  const groups=[
+   {pages:[0],finals:['Dropdown5'],matrix:'Dropdown67',score:'Dropdown300',units:{0:['Dropdown100','Dropdown101','Dropdown102','Dropdown103']}},
+   {pages:[1],finals:['Dropdown10'],matrix:'Dropdown66',score:'Dropdown301',units:{1:['Dropdown104','Dropdown105','Dropdown106','Dropdown107']}},
+   {pages:[2,3,4,5],finals:['Dropdown15','Dropdown20','Dropdown25','Dropdown30'],matrix:'Dropdown65',score:'Dropdown302',units:{2:['Dropdown108','Dropdown109','Dropdown110','Dropdown111'],3:['Dropdown108','Dropdown109','Dropdown110','Dropdown111'],4:['Dropdown108','Dropdown109','Dropdown110','Dropdown111'],5:['Dropdown108','Dropdown109','Dropdown110','Dropdown111']}},
+   {pages:[6],finals:['Dropdown35'],matrix:'Dropdown64',score:'Dropdown303',units:{6:['Dropdown112','Dropdown116','Dropdown114','Dropdown115']}},
+   {pages:[7,8],finals:['Dropdown40','Dropdown45'],matrix:'Dropdown63',score:'Dropdown304',units:{7:['Dropdown140','Dropdown141','Dropdown142','Dropdown143'],8:['Dropdown144','Dropdown145','Dropdown146','Dropdown147']}},
+   {pages:[9,10],finals:['Dropdown50','Dropdown55'],matrix:'Dropdown61',score:'Dropdown305',units:{9:['Dropdown130','Dropdown131','Dropdown132','Dropdown133'],10:['Dropdown134','Dropdown135','Dropdown136','Dropdown137']}},
+   {pages:[11],finals:['Dropdown56'],matrix:'Dropdown60',score:'Dropdown306',units:{11:['Dropdown117','Dropdown118','Dropdown119','Dropdown120']}},
+   {pages:[12],finals:['Dropdown57'],matrix:'Dropdown62',score:'Dropdown307',units:{12:['Dropdown121','Dropdown122','Dropdown123','Dropdown124']}}
+  ];
+  const riskFields=['Dropdown60','Dropdown61','Dropdown62','Dropdown63','Dropdown64','Dropdown65','Dropdown66','Dropdown67'];
+  function failedPCC(v){
+   const failed=new Map();
+   if(typeof BPF_PHRASES==='undefined'||typeof bpfPhraseName!=='function')return failed;
+   for(const page of BPF_PHRASES)for(const row of (page.rows||[]))for(const scope of (row.scopes||[])){
+    for(let i=0;i<(scope.phrases||[]).length;i++){
+     if(String(scope.phrases[i].appcc||'').toUpperCase()!=='PCC')continue;
+     if(v[bpfPhraseName(scope,i)]!=='0')continue;
+     const col=Number(scope.col);
+     if(!Number.isInteger(col)||col<1||col>4)continue;
+     if(!failed.has(page.page))failed.set(page.page,new Set());
+     failed.get(page.page).add(col);
+    }
+   }
+   return failed;
+  }
+  function corrected(...args){
+   const result=previous.apply(this,args),v=window.Guia?.values;
+   if(!v)return result;
+   const failed=failedPCC(v);
+   for(const group of groups){
+    let pcc=false;
+    for(const p of group.pages){
+     const cols=failed.get(p);
+     if(!cols||!cols.size)continue;
+     pcc=true;
+     for(const col of cols){
+      const unitField=group.units[p]?.[col-1];
+      if(unitField)v[unitField]='3'; // célula da unidade: ALTO por PCC
+     }
+    }
+    // A célula da matriz deve refletir ALTO tanto por PCC quanto por risco próprio do processo.
+    if(pcc||group.finals.some(field=>v[field]==='ALTO')){
+     v[group.matrix]='ALTO';
+     v[group.score]='3';
+    }
+   }
+   const levels=riskFields.map(field=>v[field]);
+   const anyHigh=levels.includes('ALTO');
+   // Sobrepor apenas a regra prioritária ALTO; preservar o cálculo geral
+   // que o formulário produziu para os demais cenários.
+   if(anyHigh)v.Dropdown58='ALTO';
+   v.Group279=v.Dropdown58==='BAIXO'?'0':v.Dropdown58==='MÉDIO'?'1':v.Dropdown58==='ALTO'?'2':'Off';
+   if(typeof window.sync==='function')window.sync();
+   return result;
+  }
+  corrected.__bpfRiskPCCMatrixV97=true;
+  window.recalc=corrected;
+  if(window.Guia)window.Guia.recalc=corrected;
+ }
+
+ installGeneralRiskCount();
+ // O PDF mantém os campos originais de observação, sem sobreposição de texto PCC.
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+
+
+/* Revisão F1 reunificados v58: opções editáveis no formulário, sem inserir F2,
+   sem mudar o texto legal dos itens, os valores da inspeção ou a categoria APPCC. */
+(()=>{'use strict';
+ if(window.__BPF_F1_CRITERIOS_58)return;
+ window.__BPF_F1_CRITERIOS_58=true;
+ const options={
+  '4.10.1':['Implementação do controle de qualidade','Documentação do controle de qualidade'],
+  '4.11.1':['Supervisão dos manipuladores','Capacitação periódica dos manipuladores'],
+  '4.11.3':['Capacitação do responsável pela industrialização — curso mínimo de 40 horas','Curso concluído há mais de 2 anos — atualização/reciclagem comprovada (não marcar se não aplicável)'],
+  '4.11.4':['Certificados dos manipuladores — Captação','Certificados dos manipuladores — Condução','Certificados dos manipuladores — Reservatórios','Certificados dos manipuladores — Recepção','Certificados dos manipuladores — Higienização','Certificados dos manipuladores — Envase','Certificado do responsável pela industrialização — data, carga horária e conteúdo']
+ };
+ const titles={
+  '4.10.1':'F1 — Implementação e documentação do controle de qualidade',
+  '4.11.1':'F1 — Supervisão e capacitação periódica',
+  '4.11.3':'F1 — Capacitação de 40 horas e atualização após 2 anos',
+  '4.11.4':'F1 — Certificados dos manipuladores e do responsável pela industrialização'
+ };
+ const explanations={
+  '4.10.1':'Verificar separadamente a IMPLEMENTAÇÃO e a DOCUMENTAÇÃO do controle de qualidade. Ambos os critérios aplicáveis devem ser atendidos para o F1 ser conforme.',
+  '4.11.1':'Verificar separadamente a SUPERVISÃO dos manipuladores e a CAPACITAÇÃO PERIÓDICA, incluindo registros, conteúdos, datas e participantes.',
+  '4.11.3':'Verificar a capacitação de no mínimo 40 horas. Se o curso tiver mais de dois anos, verificar a atualização/reciclagem. Para curso com até dois anos, não marcar a segunda opção. Uma falha em critério aplicável torna F1 NÃO.',
+  '4.11.4':'Verificar os CERTIFICADOS DOS MANIPULADORES nos processos aplicáveis e o CERTIFICADO DO RESPONSÁVEL PELA INDUSTRIALIZAÇÃO. Manter uma única frase F1.'
+ };
+ function install(){
+  if(typeof window.bpfF1Checks!=='function'||typeof window.bpfPanels!=='function')return false;
+  if(window.bpfF1Checks.__crit58)return true;
+  const sourceChecks=window.bpfF1Checks;
+  function checked(row,scope){
+   const list=sourceChecks.call(this,row,scope);
+   const labels=options[row?.code];
+   if(labels)list.forEach((entry,i)=>{if(labels[i])entry.option=labels[i]});
+   return list;
+  }
+  checked.__crit58=true;
+  window.bpfF1Checks=checked;
+  const sourcePanels=window.bpfPanels;
+  function panels(page,row){
+   const list=sourcePanels.call(this,page,row);
+   if(titles[row?.code]&&list.length)list[0].label=titles[row.code];
+   return list;
+  }
+  panels.__crit58=true;
+  window.bpfPanels=panels;
+  try{
+   if(typeof BPF_PHRASES!=='undefined')for(const page of BPF_PHRASES)for(const row of page.rows){
+    if(!explanations[row.code]||row.phrases.length!==1)continue;
+    row.phrases[0].guidance=explanations[row.code];
+    for(const scope of row.scopes)if(scope.phrases.length===1)scope.phrases[0].guidance=explanations[row.code];
+   }
+  }catch(e){window.__BPF_F1_GUIA_ERRO=String(e)}
+  return true;
+ }
+ if(!install())document.addEventListener('DOMContentLoaded',install,{once:true});
+ document.addEventListener('change',event=>{
+  const input=event.target;
+  const editor=input?.closest?.('#bpf-editor');
+  if(!editor||!String(editor.getAttribute('aria-label')).includes('4.11.3')||!input.matches('input[data-answer-name]'))return;
+  try{
+   if(typeof BPF_PHRASES==='undefined'||typeof bpfPhraseName!=='function')return;
+   const data=window.Guia?.values;
+   if(!data)return;
+   const page=BPF_PHRASES.find(p=>p.rows.some(r=>r.code==='4.11.3'));
+   const row=page?.rows.find(r=>r.code==='4.11.3');
+   if(!row)return;
+   const panel=window.bpfPanels(page,row)[0];
+   const entry=panel.entries.find(e=>e.name===input.dataset.answerName);
+   if(!entry)return;
+   const applicable=panel.entries.filter(e=>e.scope===entry.scope);
+   const first=data[applicable[0]?.name],second=data[applicable[1]?.name];
+   const result=(first==='0'||second==='0')?'0':first==='1'?'1':'';
+   data[bpfPhraseName(entry.scope,0)]=result;
+   if(window.Guia&&typeof window.Guia.recalc==='function')window.Guia.recalc();
+  }catch(e){window.__BPF_F1_GUIA_ERRO=String(e)}
+ });
+})();
+
+/* Carregamento permanente das etiquetas APPCC nos formulários abertos diretamente. */
+(function(){'use strict';
+ if(window.__bpfEtiquetasLoaderV63)return;
+ window.__bpfEtiquetasLoaderV63=true;
+ const script=document.createElement('script');
+ script.src='./bpf-etiquetas-appcc-20261108.js?v=20261108-etiquetas-diretas-v63';
+ script.defer=true;
+ document.head.appendChild(script);
+})();
+

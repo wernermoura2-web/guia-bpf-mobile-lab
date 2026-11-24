@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia de Avaliação de Risco — BPF/APPCC</title><meta name="theme-color" content="#0b5c91">
+<style>html,body{margin:0;width:100%;height:100%;font-family:Arial,sans-serif;background:#eff6fa;color:#17445c}#formulario{display:block;width:100%;height:100dvh;border:0}#avisos{position:fixed;bottom:12px;left:12px;z-index:10;background:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 3px 12px #0002;font-size:13px}#avisos[hidden]{display:none}</style></head>
+<body><iframe id="formulario" title="Guia BPF/APPCC" allow="fullscreen; clipboard-read; clipboard-write"></iframe><div id="avisos" role="status">Carregando o guia... <a id="direto" href="./equipe.html">Abrir diretamente</a></div>
+<script>
+(function(){
+'use strict';
+const q=new URLSearchParams(location.search), mode=q.get('modo')==='individual'?'individual':'equipe';
+q.delete('modo'); q.set('v','20261123-f-padrao-v31');
+const target='./'+mode+'.html?'+q.toString();
+const frame=document.getElementById('formulario'), status=document.getElementById('avisos');
+document.getElementById('direto').href=target;
+// Somente o recurso visual é acrescentado. Os F ficam sob controle do formulário original.
+const files=['bpf-etiquetas-appcc-20261108.js?v=20261115-impresso-referencia-pagina','bpf-correcao-f-pdf-v72.js?v=20261115-impresso-referencia-pagina','bpf-fotos-somente-nc-20261109.js?v=20261112-retomada-v130','bpf-obs-livres-sem-prefixo-sim-20261109.js?v=20261112-retomada-v130','bpf-pcc-rotulos-risco-20261109.js?v=20261114-matriz-alto-pcc','bpf-impressao-unicode-compat-20261109.js?v=20261112-retomada-v130','bpf-cq-continuacao-20261109.js?v=20261112-retomada-v130','bpf-frases-legais-tela.js?v=20261121-recepcao-f22-v22','bpf-correcao-f23-453.js?v=20261121-recepcao-f22-v22','bpf-frases-imagem-v21.js?v=20261123-f123-padronizacao-v1','bpf-recepcao-frases-v22.js?v=20261123-f123-padronizacao-v1','bpf-inversao-f2-f3-458-v23.js?v=20261121-f458-inversao-v26','bpf-frases-f-padrao-completo-v28.js?v=20261123-f-padrao-v31','bpf-pdf-paridade-html-v27.js?v=20261123-paridade-html-v32-observacoes','bpf-padronizacao-f123-20261123.js?v=20261123-f123-padronizacao-v1'];
+let inserted=false;
+frame.addEventListener('load',()=>{
+ try{
+  const doc=frame.contentDocument;
+  if(!doc||!doc.documentElement)throw Error('O formulário não abriu.');
+  // Ignorar o carregamento inicial about:blank: as etiquetas devem entrar no formulário verdadeiro.
+  if(!doc.URL.includes('/'+mode+'.html'))return;
+  if(inserted)return;
+  inserted=true;
+  let index=0;
+  function next(){
+   if(index===files.length){status.hidden=true;return}
+   const script=doc.createElement('script');
+   script.src='./'+files[index++];
+   script.onload=next;
+   script.onerror=()=>{console.warn('Recurso adicional indisponível:',script.src);next()};
+   (doc.head||doc.documentElement).appendChild(script);
+  }
+  next();
+ }catch(e){status.textContent='Não foi possível aplicar as etiquetas. Use o acesso direto abaixo.';}
+});
+async function openGuide(){
+ if('serviceWorker' in navigator){
+  let timer;
+  const update=async()=>{
+   const registration=await navigator.serviceWorker.register('./sw-guia18.js',{scope:'./',updateViaCache:'none'});
+   await registration.update().catch(()=>{});
+   const worker=registration.installing||registration.waiting;
+   if(!navigator.serviceWorker.controller||worker){
+    await new Promise(resolve=>{
+     const check=()=>{
+      if(!navigator.serviceWorker.controller||worker&&registration.active!==worker)return;
+      navigator.serviceWorker.removeEventListener('controllerchange',check);
+      resolve();
+     };
+     navigator.serviceWorker.addEventListener('controllerchange',check);
+     check();
+    });
+   }
+  };
+  try{await Promise.race([update(),new Promise(resolve=>{timer=setTimeout(resolve,20000);})]);}
+  catch(_){}
+  finally{clearTimeout(timer);}
+ }
+ frame.src=target;
+}
+openGuide();
+// A interface do formulário continua acessível mesmo se um complemento demorar.
+setTimeout(()=>{status.hidden=true},12000);
+})();
+</script></body></html>
